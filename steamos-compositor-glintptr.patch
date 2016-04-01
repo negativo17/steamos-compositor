@@ -1,0 +1,12 @@
+diff -Naur steamos-compositor.old/src/steamcompmgr.c steamos-compositor/src/steamcompmgr.c
+--- steamos-compositor.old/src/steamcompmgr.c	2015-04-24 10:21:13.174944165 +0200
++++ steamos-compositor/src/steamcompmgr.c	2015-04-24 10:21:23.491920036 +0200
+@@ -41,6 +41,8 @@
+ #include <X11/Xlib.h>
+ #include <X11/Xutil.h>
+ #include <X11/Xatom.h>
++typedef ptrdiff_t GLsizeiptr;
++typedef ptrdiff_t GLintptr;
+ #include <X11/extensions/Xcomposite.h>
+ #include <X11/extensions/Xdamage.h>
+ #include <X11/extensions/Xrender.h>
