@@ -1,7 +1,7 @@
 %global username steam
 
 Name:           steamos-compositor
-Version:        1.31
+Version:        1.33
 Release:        1%{?dist}
 Summary:        SteamOS Compositor
 
@@ -97,6 +97,9 @@ exit 0
 %{_sharedstatedir}/AccountsService/icons/steam
 
 %changelog
+* Fri Apr 01 2016 Simone Caronni <negativo17@gmail.com> - 1.33-1
+- Update to 1.33.
+
 * Sat Oct 31 2015 Simone Caronni <negativo17@gmail.com> - 1.31-1
 - Update to version 1.31.
 
