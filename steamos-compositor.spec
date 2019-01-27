@@ -1,102 +1,75 @@
-%global username steam
-
 Name:           steamos-compositor
-Version:        1.34
+Version:        1.35
 Release:        1%{?dist}
 Summary:        SteamOS Compositor
-
 License:        BSD
 URL:            http://store.steampowered.com/steamos/
-Source0:        http://repo.steampowered.com/steamos/pool/main/s/%{name}/%{name}_%{version}.tar.xz
-Source1:        steam-as-account
-Source2:        steam-as-icon
-Patch0:         %{name}-preload.patch
-Patch1:         %{name}-glintptr.patch
+
+Source0:        http://repo.steamstatic.com/steamos/pool/main/s/%{name}/%{name}_%{version}.tar.xz
+
+Patch0:         %{name}-1.35-steamos-session.patch
+Patch1:         %{name}-1.34-glintptr.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  desktop-file-utils
-BuildRequires:  libXxf86vm-devel
-BuildRequires:  libX11-devel
-BuildRequires:  libXext-devel
-BuildRequires:  libXrender-devel
-BuildRequires:  libXcomposite-devel
-BuildRequires:  mesa-libGL-devel
-BuildRequires:  SDL_image-devel
-BuildRequires:  systemd-devel
+BuildRequires:  gcc
+BuildRequires:  pkgconfig(gl)
+BuildRequires:  pkgconfig(libudev)
+BuildRequires:  pkgconfig(SDL_image)
+BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(xcomposite)
+BuildRequires:  pkgconfig(xdamage)
+BuildRequires:  pkgconfig(xext)
+BuildRequires:  pkgconfig(xrender)
+BuildRequires:  pkgconfig(xxf86vm)
 
-%description
-Provides graphics compositor services for the full-screen environment of
-SteamOS.
-
-%package -n steamos-session
-Summary:        SteamOS desktop session
-BuildArch:      noarch
-
-Requires:       %{name} = %{version}-%{release}
-Requires(pre):  shadow-utils
-Requires(pre):  openssl
-# Require all SteamOS bits here
 Requires:       steam
 Requires:       steamos-modeswitch-inhibitor
-Requires:       steamos-backgrounds
 Requires:       steamos-base-files
 
-%description -n steamos-session
-The steamos-session package contains required files for starting a desktop
-session with the Steam client configured in SteamOS mode.
+%description
+Provides graphics compositor services for the full-screen environment of SteamOS
+and required files for starting a desktop session with the Steam client
+configured in SteamOS mode.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-sed -i -e '/Encoding/d' -e 's/steamicon.png/steamicon/g' \
-    .%{_datadir}/xsessions/steamos.desktop
+%autosetup -p1
 
 %build
 autoreconf -vif
 %configure
-make %{?_smp_mflags}
+%make_install
 
 %install
 %make_install
-install -p -m644 -D .%{_datadir}/icons/steam/arrow.png \
-    %{buildroot}%{_datadir}/icons/steam/arrow.png
-install -p -m644 -D .%{_datadir}/xsessions/steamos.desktop \
-    %{buildroot}%{_datadir}/xsessions/steamos.desktop
-install -p -m755 -D .%{_bindir}/steamos-session \
-    %{buildroot}%{_bindir}/steamos-session
 
-install -p -m644 -D %{SOURCE1} %{buildroot}%{_sharedstatedir}/AccountsService/users/steam
-install -p -m644 -D %{SOURCE2} %{buildroot}%{_sharedstatedir}/AccountsService/icons/steam
+install -p -m755 -D .%{_bindir}/steamos-session %{buildroot}%{_bindir}/steamos-session
 
-desktop-file-validate %{buildroot}%{_datadir}/xsessions/steamos.desktop
+install -p -m644 -D .%{_datadir}/icons/steam/arrow.png %{buildroot}%{_datadir}/icons/steam/arrow.png
+
+desktop-file-install --set-icon=steam --dir=%{buildroot}%{_datadir}/xsessions/ \
+    .%{_datadir}/xsessions/steamos.desktop \
 
 rm -fr %{buildroot}%{_docdir}/%{name}
 
-%pre -n steamos-session
-getent group %username >/dev/null || groupadd %username
-getent passwd %username >/dev/null || useradd \
-    -g %username -d /home/%username \
-    -s /bin/bash -c "SteamOS" \
-    -p $(openssl passwd -1 %username) \
-    %username
-exit 0
+%check
+desktop-file-validate %{buildroot}%{_datadir}/xsessions/steamos.desktop
 
 %files
 %doc debian/copyright debian/changelog
 %{_bindir}/loadargb_cursor
 %{_bindir}/steamcompmgr
-%{_bindir}/udev_is_boot_vga
-%{_datadir}/icons/steam
-
-%files -n steamos-session
 %{_bindir}/steamos-session
+%{_bindir}/udev_is_boot_vga
+%{_datadir}/icons/steam/
 %{_datadir}/xsessions/steamos.desktop
-%{_sharedstatedir}/AccountsService/users/steam
-%{_sharedstatedir}/AccountsService/icons/steam
 
 %changelog
+* Sun Jan 27 2019 Simone Caronni <negativo17@gmail.com> - 1.35-1
+- Update to version 1.35.
+- Rework package completely.
+
 * Sat Apr 15 2017 Simone Caronni <negativo17@gmail.com> - 1.34-1
 - Update to 1.34.
 

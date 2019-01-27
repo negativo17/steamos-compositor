@@ -1,0 +1,28 @@
+diff -Naur steamos-compositor-1.35.old/usr/bin/steamos-session steamos-compositor-1.35/usr/bin/steamos-session
+--- steamos-compositor-1.35.old/usr/bin/steamos-session	2018-08-25 01:41:49.000000000 +0200
++++ steamos-compositor-1.35/usr/bin/steamos-session	2019-01-27 21:37:28.883510554 +0100
+@@ -6,13 +6,11 @@
+ export HOMETEST_DESKTOP_USER=desktop
+ export HOMETEST_DESKTOP_SESSION=gnome
+ 
+-/usr/bin/steamos/set_hd_mode.sh >> $HOME/set_hd_mode.log
++/usr/lib64/steamos/set_hd_mode.sh >> $HOME/set_hd_mode.log
+ 
+-export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libmodeswitch_inhibitor.so:/usr/lib/i386-linux-gnu/libmodeswitch_inhibitor.so
++export LD_PRELOAD=/usr/lib64/libmodeswitch_inhibitor.so.0.0.0:/usr/lib/libmodeswitch_inhibitor.so.0.0.0
+ 
+-# Disable DPMS and screen blanking for now; it doesn't know about controller
+-# or Steam remote control events right now
+-xset -dpms
++# Disable screen blanking for now; it doesn't know about controller or Steam remote control events right now
+ xset s off
+ 
+ steamcompmgr &
+@@ -20,6 +18,6 @@
+ loadargb_cursor /usr/share/icons/steam/arrow.png
+ 
+ # Workaround for Steam login issue while Steam client change propagates out of Beta
+-touch ~/.steam/root/config/SteamAppData.vdf || true
++#touch ~/.steam/root/config/SteamAppData.vdf || true
+ 
+ steam -tenfoot -steamos -enableremotecontrol
